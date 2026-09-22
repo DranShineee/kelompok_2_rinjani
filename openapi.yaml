@@ -1,42 +1,42 @@
 openapi: 3.0.3
 
 info:
-  title: REST API Mahasiswa
+  title: REST API Peralatan Sewa Rinjani (Equipments)
   description: >
-    API untuk mengelola data mahasiswa pada
-    Praktikum Interoperabilitas Pertemuan 6.
+    API Contract untuk mengelola inventaris alat sewa pendakian Gunung Rinjani
+    pada Praktikum Interoperabilitas Pertemuan 6.
   version: 1.0.0
 
 servers:
-  - url: http://localhost:3000
-    description: Local Development Server
+  - url: http://127.0.0.1:8000
+    description: Server Lokal Laravel (php artisan serve)
 
 tags:
-  - name: Mahasiswa
-    description: Operasi data mahasiswa
+  - name: Equipments
+    description: Operasi manajemen katalog dan stok alat sewa outdoor
 
 paths:
 
-  /api/mahasiswa:
+  /api/equipments:
 
     get:
       tags:
-        - Mahasiswa
-      summary: Mengambil seluruh data mahasiswa
-      description: Mengembalikan daftar seluruh mahasiswa.
-      operationId: getAllMahasiswa
+        - Equipments
+      summary: Mengambil seluruh katalog alat sewa
+      description: Mengembalikan daftar seluruh peralatan sewa yang tersedia di database.
+      operationId: getAllEquipments
 
       responses:
 
         '200':
-          description: Data mahasiswa berhasil ditemukan
+          description: Data peralatan sewa berhasil diambil
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MahasiswaListResponse'
+                $ref: '#/components/schemas/EquipmentListResponse'
 
         '500':
-          description: Terjadi kesalahan pada server
+          description: Terjadi kesalahan pada server backend
           content:
             application/json:
               schema:
@@ -45,61 +45,60 @@ paths:
 
     post:
       tags:
-        - Mahasiswa
-      summary: Menambahkan mahasiswa baru
-      description: Menambahkan satu data mahasiswa.
-      operationId: createMahasiswa
+        - Equipments
+      summary: Menambahkan peralatan sewa baru
+      description: Menyimpan data satu unit perlengkapan outdoor baru ke database.
+      operationId: createEquipment
 
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MahasiswaInput'
-
+              $ref: '#/components/schemas/EquipmentInput'
             example:
-              nim: "230101003"
-              nama: "Andi"
-              prodi: "TRPL"
+              name: "Tenda Dome 4P Kapasitas 4 Orang"
+              category: "Tenda"
+              daily_rental_rate: 60000
+              total_stock: 12
 
       responses:
 
         '201':
-          description: Mahasiswa berhasil ditambahkan
+          description: Peralatan sewa berhasil ditambahkan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MahasiswaResponse'
+                $ref: '#/components/schemas/EquipmentResponse'
 
-        '400':
-          description: Data yang dikirim tidak valid
+        '422':
+          description: Data yang dikirim tidak valid atau gagal divalidasi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ValidationErrorResponse'
 
         '500':
-          description: Terjadi kesalahan pada server
+          description: Terjadi kesalahan pada server backend
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
 
-  /api/mahasiswa/{id}:
+  /api/equipments/{id}:
 
     get:
       tags:
-        - Mahasiswa
-      summary: Mengambil mahasiswa berdasarkan ID
-      description: Mengembalikan satu data mahasiswa berdasarkan ID.
-      operationId: getMahasiswaById
+        - Equipments
+      summary: Mengambil detail satu alat sewa berdasarkan ID
+      description: Mengembalikan data rincian satu unit alat sewa sesuai parameter ID.
+      operationId: getEquipmentById
 
       parameters:
-
         - name: id
           in: path
-          description: ID mahasiswa
+          description: ID unik alat sewa
           required: true
           schema:
             type: integer
@@ -108,39 +107,38 @@ paths:
       responses:
 
         '200':
-          description: Data mahasiswa ditemukan
+          description: Detail peralatan ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MahasiswaResponse'
+                $ref: '#/components/schemas/EquipmentResponse'
 
         '404':
-          description: Mahasiswa tidak ditemukan
+          description: Peralatan sewa tidak ditemukan
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
         '500':
-          description: Terjadi kesalahan pada server
+          description: Terjadi kesalahan internal server
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
 
-    patch:
+    put:
       tags:
-        - Mahasiswa
-      summary: Memperbarui data mahasiswa
-      description: Mengubah data mahasiswa berdasarkan ID.
-      operationId: updateMahasiswa
+        - Equipments
+      summary: Memperbarui data peralatan sewa
+      description: Mengubah data peralatan sewa secara keseluruhan berdasarkan ID.
+      operationId: updateEquipment
 
       parameters:
-
         - name: id
           in: path
-          description: ID mahasiswa
+          description: ID peralatan yang akan diubah
           required: true
           schema:
             type: integer
@@ -151,37 +149,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MahasiswaUpdateInput'
-
+              $ref: '#/components/schemas/EquipmentInput'
             example:
-              nama: "Andi Pratama"
-              prodi: "TRPL"
+              name: "Tenda Dome 4P Seri Pro"
+              category: "Tenda"
+              daily_rental_rate: 75000
+              total_stock: 10
 
       responses:
 
         '200':
-          description: Data mahasiswa berhasil diperbarui
+          description: Data peralatan berhasil diperbarui
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MahasiswaResponse'
+                $ref: '#/components/schemas/EquipmentResponse'
 
-        '400':
-          description: Data yang dikirim tidak valid
+        '422':
+          description: Validasi input data pembaruan gagal
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ValidationErrorResponse'
 
         '404':
-          description: Mahasiswa tidak ditemukan
+          description: Peralatan sewa tidak ditemukan
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
         '500':
-          description: Terjadi kesalahan pada server
+          description: Terjadi kesalahan internal server
           content:
             application/json:
               schema:
@@ -190,16 +189,15 @@ paths:
 
     delete:
       tags:
-        - Mahasiswa
-      summary: Menghapus data mahasiswa
-      description: Menghapus mahasiswa berdasarkan ID.
-      operationId: deleteMahasiswa
+        - Equipments
+      summary: Menghapus data alat sewa
+      description: Menghapus catatan inventaris alat sewa berdasarkan ID.
+      operationId: deleteEquipment
 
       parameters:
-
         - name: id
           in: path
-          description: ID mahasiswa
+          description: ID peralatan yang ingin dihapus
           required: true
           schema:
             type: integer
@@ -208,21 +206,21 @@ paths:
       responses:
 
         '200':
-          description: Mahasiswa berhasil dihapus
+          description: Peralatan sewa berhasil dihapus
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeleteResponse'
 
         '404':
-          description: Mahasiswa tidak ditemukan
+          description: Peralatan sewa tidak ditemukan
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
         '500':
-          description: Terjadi kesalahan pada server
+          description: Terjadi kesalahan internal server
           content:
             application/json:
               schema:
@@ -233,118 +231,112 @@ components:
 
   schemas:
 
-    Mahasiswa:
+    Equipment:
       type: object
       properties:
-
         id:
           type: integer
           example: 1
-
-        nim:
+        name:
           type: string
-          example: "230101001"
-
-        nama:
+          example: "Tenda Dome 4P Kapasitas 4 Orang"
+        category:
           type: string
-          example: "Budi"
-
-        prodi:
+          example: "Tenda"
+        daily_rental_rate:
+          type: number
+          format: float
+          example: 60000.00
+        total_stock:
+          type: integer
+          example: 12
+        created_at:
           type: string
-          example: "TRPL"
+          format: date-time
+          example: "2026-09-22T07:15:00.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-09-22T07:15:00.000000Z"
 
-
-    MahasiswaInput:
+    EquipmentInput:
       type: object
       required:
-        - nim
-        - nama
-        - prodi
-
+        - name
+        - category
+        - daily_rental_rate
+        - total_stock
       properties:
-
-        nim:
+        name:
           type: string
-          example: "230101003"
-
-        nama:
+          example: "Kompor Portable Ultralight"
+        category:
           type: string
-          example: "Andi"
+          example: "Alat Masak"
+        daily_rental_rate:
+          type: number
+          example: 20000
+        total_stock:
+          type: integer
+          example: 20
 
-        prodi:
-          type: string
-          example: "TRPL"
-
-
-    MahasiswaUpdateInput:
+    EquipmentResponse:
       type: object
-
       properties:
-
-        nim:
-          type: string
-          example: "230101003"
-
-        nama:
-          type: string
-          example: "Andi Pratama"
-
-        prodi:
-          type: string
-          example: "TRPL"
-
-
-    MahasiswaResponse:
-      type: object
-
-      properties:
-
         status:
           type: string
           example: "success"
-
+        message:
+          type: string
+          example: "Operasi peralatan sewa berhasil dilakukan"
         data:
-          $ref: '#/components/schemas/Mahasiswa'
+          $ref: '#/components/schemas/Equipment'
 
-
-    MahasiswaListResponse:
+    EquipmentListResponse:
       type: object
-
       properties:
-
         status:
           type: string
           example: "success"
-
+        message:
+          type: string
+          example: "Daftar peralatan sewa berhasil diambil"
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Mahasiswa'
-
+            $ref: '#/components/schemas/Equipment'
 
     DeleteResponse:
       type: object
-
       properties:
-
         status:
           type: string
           example: "success"
-
         message:
           type: string
-          example: "Mahasiswa berhasil dihapus"
+          example: "Peralatan sewa berhasil dihapus"
 
-
-    ErrorResponse:
+    ValidationErrorResponse:
       type: object
-
       properties:
-
         status:
           type: string
           example: "error"
-
         message:
           type: string
-          example: "Mahasiswa tidak ditemukan"
+          example: "Validasi gagal"
+        errors:
+          type: object
+          example:
+            name:
+              - "Kolom name wajib diisi."
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "error"
+        message:
+          type: string
+          example: "Peralatan sewa tidak ditemukan"
